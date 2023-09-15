@@ -2,15 +2,15 @@ import SwiftUI
 
 public struct ModalSheet: View {
     @ObservedObject var viewModel: ModalViewModel
-    
+
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    
+
     @State var searchEditing = false
-    
+
     public var body: some View {
         VStack(spacing: 0) {
             modalHeader()
-            
+
             VStack(spacing: 0) {
                 contentHeader()
                 content()
@@ -19,10 +19,9 @@ public struct ModalSheet: View {
             .background(Color.background1)
             .cornerRadius(30, corners: [.topLeft, .topRight])
         }
-        .edgesIgnoringSafeArea(.bottom)
         .background(
             VStack(spacing: 0) {
-                Color.accent
+                Color.white
                     .frame(height: 90)
                     .cornerRadius(8, corners: [[.topLeft, .topRight]])
                 Color.background1
@@ -39,32 +38,33 @@ public struct ModalSheet: View {
             }
         }
     }
-    
+
     private func modalHeader() -> some View {
         HStack(spacing: 0) {
             Image(.walletconnect_logo)
                 .resizable()
+                .renderingMode(.template)
+                .foregroundColor(Color.black)
                 .scaledToFit()
                 .frame(width: 180)
                 .padding(.leading, 10)
-            
+
             Spacer()
-            
+
             closeButton()
                 .padding(.trailing, 10)
         }
-        .foregroundColor(Color.foreground1)
         .frame(height: 48)
     }
-    
+
     private func contentHeader() -> some View {
         HStack(spacing: 0) {
             if viewModel.destinationStack.count > 1 {
                 backButton()
             }
-            
+
             Spacer()
-            
+
             switch viewModel.destination {
             case .welcome:
                 qrButton()
@@ -86,11 +86,7 @@ public struct ModalSheet: View {
                             self.searchEditing = editing
                         })
                         .transform { view in
-                            #if os(macOS)
-                            view
-                            #else
                             view.autocapitalization(.none)
-                            #endif
                         }
                     }
                     .padding(.vertical, 4)
@@ -115,7 +111,7 @@ public struct ModalSheet: View {
             }
         )
     }
-    
+
     @ViewBuilder
     private func welcome() -> some View {
         WalletList(
@@ -129,22 +125,22 @@ public struct ModalSheet: View {
             onListingTap: { viewModel.onListingTap($0) }
         )
     }
-    
+
     private func qrCode() -> some View {
         VStack {
             if let uri = viewModel.uri {
-                QRCodeView(uri: uri)
+                WCQRCodeView(uri: uri)
             } else {
-                ActivityIndicator(isAnimating: .constant(true))
+                WCActivityIndicator(isAnimating: .constant(true))
             }
         }
     }
-    
+
     @ViewBuilder
     private func content() -> some View {
         switch viewModel.destination {
         case .welcome,
-             .viewAll:
+                .viewAll:
             welcome()
         case .qr:
             qrCode()
@@ -157,9 +153,9 @@ public struct ModalSheet: View {
             )
             .frame(minHeight: verticalSizeClass == .compact ? 200 : 550)
             .padding(.bottom, 20)
-            
+
         case let .walletDetail(wallet):
-            WalletDetail(
+            WCWalletDetail(
                 viewModel: .init(
                     wallet: wallet,
                     deeplinkHandler: viewModel
@@ -174,12 +170,12 @@ extension ModalSheet {
         Button {
             viewModel.onCloseButton()
         } label: {
-            Image(Asset.close)
+            Image(Asset.wc_close)
                 .padding(8)
         }
         .buttonStyle(CircuralIconButtonStyle())
     }
-    
+
     private func backButton() -> some View {
         Button {
             withAnimation {
@@ -190,7 +186,7 @@ extension ModalSheet {
                 .padding(20)
         }
     }
-    
+
     private func qrButton() -> some View {
         Button {
             withAnimation {
@@ -201,7 +197,7 @@ extension ModalSheet {
                 .padding()
         }
     }
-    
+
     private func copyButton() -> some View {
         Button {
             viewModel.onCopyButton()

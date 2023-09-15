@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 struct CircuralIconButtonStyle: ButtonStyle {
@@ -47,16 +46,16 @@ struct WCMMainButtonStyle: ButtonStyle {
 
 #if DEBUG
 struct ButtonStyle_Previews: PreviewProvider {
-    
+
     static var previews: some View {
-        
+
         VStack {
             Button("Accent", action: {})
                 .buttonStyle(WCMAccentButtonStyle())
-            
+
             Button("Main", action: {})
                 .buttonStyle(WCMMainButtonStyle())
-            
+
             Button("F", action: {})
                 .buttonStyle(CircuralIconButtonStyle())
         }

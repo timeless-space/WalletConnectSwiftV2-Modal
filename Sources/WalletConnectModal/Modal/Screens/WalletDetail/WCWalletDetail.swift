@@ -1,20 +1,20 @@
 import SwiftUI
 
-struct WalletDetail: View {
+struct WCWalletDetail: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    
-    @ObservedObject var viewModel: WalletDetailViewModel
-    
-    @State var retryShown: Bool = false
-    
+
+    @ObservedObject var viewModel: WCWalletDetailViewModel
+
+    @State var retryShown = false
+
     var body: some View {
         VStack {
             if viewModel.showToggle {
                 Web3ModalPicker(
-                    WalletDetailViewModel.Platform.allCases,
+                    WCWalletDetailViewModel.Platform.allCases,
                     selection: viewModel.preferredPlatform
                 ) { item in
-                        
+
                     HStack {
                         switch item {
                         case .native:
@@ -45,14 +45,14 @@ struct WalletDetail: View {
                 .frame(maxWidth: 250)
                 .padding()
             }
-            
+
             content()
                 .onAppear {
-                    
+
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         viewModel.handle(.onAppear)
                     }
-                    
+
                     if verticalSizeClass == .compact {
                         retryShown = true
                     } else {
@@ -69,7 +69,7 @@ struct WalletDetail: View {
                 .animation(.easeInOut, value: viewModel.preferredPlatform)
         }
     }
-    
+
     @ViewBuilder
     func content() -> some View {
         if verticalSizeClass == .compact {
@@ -77,12 +77,12 @@ struct WalletDetail: View {
                 walletImage()
                     .padding(.horizontal, 80)
                     .layoutPriority(1)
-                
+
                 VStack(spacing: 15) {
                     if retryShown {
                         retrySection()
                     }
-                    
+
                     VStack {
                         Divider()
                         appStoreRow()
@@ -96,14 +96,14 @@ struct WalletDetail: View {
             VStack(spacing: 0) {
                 walletImage()
                     .padding(.vertical, 40)
-                
+
                 VStack(spacing: 15) {
                     if retryShown {
                         retrySection()
                             .frame(maxWidth: .infinity)
                             .padding(.top, 15)
                     }
-                    
+
                     VStack {
                         Divider()
                         appStoreRow()
@@ -116,7 +116,7 @@ struct WalletDetail: View {
             }
         }
     }
-    
+
     func walletImage() -> some View {
         VStack(spacing: 20) {
             WalletImage(wallet: viewModel.wallet, size: .large)
@@ -126,13 +126,13 @@ struct WalletDetail: View {
                     RoundedRectangle(cornerRadius: 24)
                         .stroke(.gray.opacity(0.4), lineWidth: 1)
                 )
-            
+
             Text("Continue in \(viewModel.wallet.name)...")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.foreground1)
         }
     }
-    
+
     func retrySection() -> some View {
         VStack(spacing: 15) {
             Text("You can try opening \(viewModel.wallet.name) again \((viewModel.hasNativeLink && viewModel.showUniversalLink) ? "or try using a Universal Link instead" : "")")
@@ -140,7 +140,7 @@ struct WalletDetail: View {
                 .multilineTextAlignment(.center)
                 .foregroundColor(.foreground2)
                 .fixedSize(horizontal: false, vertical: true)
-            
+
             HStack {
                 Button {
                     viewModel.handle(.didTapTryAgain)
@@ -148,7 +148,7 @@ struct WalletDetail: View {
                     Text("Try Again")
                 }
                 .buttonStyle(WCMAccentButtonStyle())
-                
+
                 if viewModel.showUniversalLink {
                     Button {
                         viewModel.handle(.didTapUniversalLink)
@@ -161,26 +161,26 @@ struct WalletDetail: View {
         }
         .frame(height: 100)
     }
-    
+
     func appStoreRow() -> some View {
         HStack(spacing: 0) {
             HStack(spacing: 10) {
                 WalletImage(wallet: viewModel.wallet, size: .small)
                     .frame(width: 28, height: 28)
                     .cornerRadius(8)
-                
+
                 Text("Get \(viewModel.wallet.name)")
                     .font(.system(size: 16).weight(.semibold))
                     .foregroundColor(.foreground1)
             }
-            
+
             Spacer()
-            
+
             HStack(spacing: 3) {
                 Text("App Store")
                     .foregroundColor(.foreground2)
                     .font(.system(size: 14).weight(.semibold))
-                
+
                 Image(systemName: "chevron.right")
                     .foregroundColor(.foreground2)
             }

@@ -1,22 +1,23 @@
-
 import Combine
 import Foundation
+import WalletConnectSign
 
 protocol ModalSheetInteractor {
     func getListings() async throws -> [Listing]
     func createPairingAndConnect() async throws -> WalletConnectURI?
-    
+
     var sessionSettlePublisher: AnyPublisher<Session, Never> { get }
     var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> { get }
 }
 
 final class DefaultModalSheetInteractor: ModalSheetInteractor {
-    
+
     lazy var sessionSettlePublisher: AnyPublisher<Session, Never> = WalletConnectModal.instance.sessionSettlePublisher
-    lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = WalletConnectModal.instance.sessionRejectionPublisher
-    
+    lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never>
+        = WalletConnectModal.instance.sessionRejectionPublisher
+
     func getListings() async throws -> [Listing] {
-        
+
         let httpClient = HTTPNetworkClient(host: "explorer-api.walletconnect.com")
         let response = try await httpClient.request(
             ListingsResponse.self,
@@ -27,10 +28,10 @@ final class DefaultModalSheetInteractor: ModalSheetInteractor {
                 excludedIds: WalletConnectModal.config.excludedWalletIds
             )
         )
-    
+
         return response.listings.values.compactMap { $0 }
     }
-    
+
     func createPairingAndConnect() async throws -> WalletConnectURI? {
         try await WalletConnectModal.instance.connect(topic: nil)
     }

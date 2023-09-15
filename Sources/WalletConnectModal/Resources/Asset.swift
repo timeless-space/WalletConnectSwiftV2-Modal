@@ -1,21 +1,23 @@
 import SwiftUI
+import UIKit
 
+// swiftlint:disable identifier_name
 enum Asset: String {
-    
+
     /// Icons
-    case close
+    case wc_close
     case external_link
     case help
     case wallet
-    
+
     /// large
     case copy_large
     case qr_large
-    
+
     /// Images
     case walletconnect_logo
     case wc_logo
-    
+
     /// Help
     case Browser
     case DAO
@@ -32,57 +34,33 @@ enum Asset: String {
 }
 
 extension Asset {
-    
+
     var image: Image {
         Image(self)
     }
 }
 
 extension Image {
-    
+
     init(_ asset: Asset) {
-        self.init(asset.rawValue, bundle: .module)
+        self.init(asset.rawValue, bundle: .main)
     }
 }
-
-#if canImport(UIKit)
-import UIKit
 
 extension Asset {
 
     var uiImage: UIImage {
         UIImage(self)
     }
-    
+
     var cgImage: CGImage {
         uiImage.cgImage!
     }
 }
 
 extension UIImage {
-    
+
     convenience init(_ asset: Asset) {
-        self.init(named: asset.rawValue, in: .module, compatibleWith: .current)!
+        self.init(named: asset.rawValue, in: .main, compatibleWith: .current)!
     }
 }
-#elseif canImport(AppKit)
-
-extension Asset {
-
-    var nsImage: NSImage {
-        NSImage(self)
-    }
-    
-    var cgImage: CGImage {
-        nsImage.cgImage!
-    }
-}
-
-extension NSImage {
-    
-    convenience init(_ asset: Asset) {
-        self.init(named: asset.rawValue)!
-    }
-}
-
-#endif

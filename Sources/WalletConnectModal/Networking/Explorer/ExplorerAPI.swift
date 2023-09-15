@@ -1,5 +1,7 @@
 import Foundation
+import WalletConnectRelay
 import HTTPClient
+import WalletConnectSign
 
 enum ExplorerAPI: HTTPService {
     case getListings(
@@ -15,7 +17,7 @@ enum ExplorerAPI: HTTPService {
         }
     }
 
-    var method: HTTPMethod {
+    var method: WalletConnectSign.HTTPMethod {
         switch self {
         case .getListings: return .get
         }
@@ -35,9 +37,9 @@ enum ExplorerAPI: HTTPService {
                 "sdkType": "wcm",
                 "sdkVersion": EnvironmentInfo.sdkName,
             ]
-            .compactMapValues { value in
-                value.isEmpty ? nil : value
-            }
+                .compactMapValues { value in
+                    value.isEmpty ? nil : value
+                }
         }
     }
 

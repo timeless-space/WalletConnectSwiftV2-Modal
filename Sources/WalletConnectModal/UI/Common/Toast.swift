@@ -21,7 +21,7 @@ enum ToastStyle {
         case .success: return Color.green
         }
     }
-  
+
     var iconFileName: String {
         switch self {
         case .info: return "info.circle.fill"
@@ -37,7 +37,7 @@ struct ToastView: View {
     var message: String
     var width = CGFloat.infinity
     var onCancelTapped: () -> Void
-  
+
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             Image(systemName: style.iconFileName)
@@ -45,9 +45,9 @@ struct ToastView: View {
             Text(message)
                 .font(Font.caption)
                 .foregroundColor(.foreground1)
-      
+
             Spacer(minLength: 10)
-      
+
             Button {
                 onCancelTapped()
             } label: {
@@ -66,7 +66,7 @@ struct ToastView: View {
 struct ToastModifier: ViewModifier {
     @Binding var toast: Toast?
     @State private var workItem: DispatchWorkItem?
-  
+
     func body(content: Content) -> some View {
         content
             .overlay(
@@ -74,13 +74,13 @@ struct ToastModifier: ViewModifier {
                     mainToastView()
                         .offset(y: -64)
                 }
-                .animation(.spring(), value: toast)
+                    .animation(.spring(), value: toast)
             )
             .onChangeBackported(of: toast) { _ in
                 showToast()
             }
     }
-  
+
     @ViewBuilder func mainToastView() -> some View {
         if let toast = toast {
             VStack {
@@ -91,38 +91,38 @@ struct ToastModifier: ViewModifier {
                 ) {
                     dismissToast()
                 }
-                
+
                 Spacer()
                     .allowsHitTesting(false)
             }
         }
     }
-  
+
     private func showToast() {
         guard let toast = toast else { return }
-    
-        #if os(iOS)
+
+#if os(iOS)
         UIImpactFeedbackGenerator(style: .light)
             .impactOccurred()
-        #endif
-        
+#endif
+
         if toast.duration > 0 {
             workItem?.cancel()
-      
+
             let task = DispatchWorkItem {
                 dismissToast()
             }
-      
+
             workItem = task
             DispatchQueue.main.asyncAfter(deadline: .now() + toast.duration, execute: task)
         }
     }
-  
+
     private func dismissToast() {
         withAnimation {
             toast = nil
         }
-    
+
         workItem?.cancel()
         workItem = nil
     }
